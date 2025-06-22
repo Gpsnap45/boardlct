@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Location Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #111;
+    }
+    th, td {
+      border: 1px solid #333;
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #222;
+    }
+    tr:nth-child(even) {
+      background-color: #1a1a1a;
+    }
+    a {
+      color: #4FC3F7;
+    }
+  </style>
+</head>
+<body>
+  <h1>📍 Location Tracker Log</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>🧍 คนที่</th>
+        <th>🕒 เวลา</th>
+        <th>🏙️ จังหวัด</th>
+        <th>🌐 พิกัด</th>
+      </tr>
+    </thead>
+    <tbody id="log-table">
+    </tbody>
+  </table>
+
+  <script>
+    fetch('/location-log.json')
+      .then(res => res.json())
+      .then(data => {
+        const tbody = document.getElementById('log-table');
+        data.forEach((item, index) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>คนที่ ${index + 1}</td>
+            <td>${new Date(item.timestamp).toLocaleString()}</td>
+            <td>--</td>
+            <td><a href="https://maps.google.com/?q=${item.latitude},${item.longitude}" target="_blank">${item.latitude}, ${item.longitude}</a></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      });
+  </script>
+</body>
+</html>
