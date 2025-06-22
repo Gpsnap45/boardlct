@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>📍 Dashboard ตำแหน่ง</title>
+  <meta charset="UTF-8">
+  <style>
+    html, body { height: 100%; margin: 0; font-family: sans-serif; }
+    #map { height: 100%; width: 100%; }
+    #info { position: absolute; top: 10px; left: 10px; background: white; padding: 10px; z-index: 1; }
+  </style>
+</head>
+<body>
+  <div id="info">📍 แผนที่แสดงพิกัดที่ได้รับ</div>
+  <div id="map"></div>
+
+  <script>
+    async function initMap() {
+      const res = await fetch("/locations");
+      const locations = await res.json();
+
+      const center = locations.length > 0
+        ? { lat: locations[locations.length - 1].lat, lng: locations[locations.length - 1].lng }
+        : { lat: 13.7563, lng: 100.5018 };
+
+      const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 6,
+        center: center
+      });
+
+      locations.forEach(loc => {
+        const marker = new google.maps.Marker({
+          position: { lat: loc.lat, lng: loc.lng },
+          map: map,
+          title: loc.name + " (" + loc.timestamp + ")"
+        });
+      });
+    }
+  </script>
+  <script async
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap">
+  </script>
+</body>
+</html>
