@@ -1,43 +1,72 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>📍 Dashboard ตำแหน่ง</title>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <title>Location Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
-    html, body { height: 100%; margin: 0; font-family: sans-serif; }
-    #map { height: 100%; width: 100%; }
-    #info { position: absolute; top: 10px; left: 10px; background: white; padding: 10px; z-index: 1; }
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #111;
+    }
+    th, td {
+      border: 1px solid #333;
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #222;
+    }
+    tr:nth-child(even) {
+      background-color: #1a1a1a;
+    }
+    a {
+      color: #4FC3F7;
+    }
   </style>
 </head>
 <body>
-  <div id="info">📍 แผนที่แสดงพิกัดที่ได้รับ</div>
-  <div id="map"></div>
+  <h1>📍 Location Tracker Log</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>🧍 คนที่</th>
+        <th>🕒 เวลา</th>
+        <th>🏙️ จังหวัด</th>
+        <th>🌐 พิกัด</th>
+      </tr>
+    </thead>
+    <tbody id="log-table">
+    </tbody>
+  </table>
 
   <script>
-    async function initMap() {
-      const res = await fetch("/locations");
-      const locations = await res.json();
-
-      const center = locations.length > 0
-        ? { lat: locations[locations.length - 1].lat, lng: locations[locations.length - 1].lng }
-        : { lat: 13.7563, lng: 100.5018 };
-
-      const map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 6,
-        center: center
-      });
-
-      locations.forEach(loc => {
-        const marker = new google.maps.Marker({
-          position: { lat: loc.lat, lng: loc.lng },
-          map: map,
-          title: loc.name + " (" + loc.timestamp + ")"
+    fetch('/location-log.json')
+      .then(res => res.json())
+      .then(data => {
+        const tbody = document.getElementById('log-table');
+        data.forEach((item, index) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>คนที่ ${index + 1}</td>
+            <td>${new Date(item.timestamp).toLocaleString()}</td>
+            <td>--</td>
+            <td><a href="https://maps.google.com/?q=${item.latitude},${item.longitude}" target="_blank">${item.latitude}, ${item.longitude}</a></td>
+          `;
+          tbody.appendChild(tr);
         });
       });
-    }
-  </script>
-  <script async
-    src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap">
   </script>
 </body>
 </html>
