@@ -21,12 +21,13 @@ app.post('/save-location', async (req, res) => {
   fs.appendFileSync('location-log.txt', log);
 
   const dateTime = formatDateThai();
-  const message = `📍 User: ${name}
-Province: - (N/A)
-🌐 Location (พื้นที่): https://maps.google.com/?q=${lat},${lng}
-📌 Coordinates (พิกัด): Latitude: ${lat} │ Longitude: ${lng}
-📏 Accuracy (รัศมี): ~${accuracy} meters (ประมาณ ${accuracy} เมตร)
-🕒 Time (เวลา): ${dateTime}`;
+  const message = `📍 ผู้ใช้งานลำดับที่ #${userCounter++} (User #${userCounter - 1})
+จังหวัด (Province): ${province}
+🌐 พิกัด (Coordinates): Latitude ${latitude}, Longitude ${longitude}
+📏 ความแม่นยำ (Accuracy): ~${accuracy} เมตร
+🕒 เวลา (Time): ${new Date(timestamp).toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' })}
+📍 ลิงก์ (Google Maps): https://maps.google.com/?q=${latitude},${longitude}`;
+
 
   try {
     await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
