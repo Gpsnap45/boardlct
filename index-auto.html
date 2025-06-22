@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Auto GPS Request</title>
+</head>
+<body>
+  <h2>📍 ระบบกำลังขอเข้าถึงตำแหน่งของคุณ...</h2>
+  <p id="status">⏳ กำลังดึงพิกัด...</p>
+
+  <script>
+    window.onload = function () {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(sendLocation, showError, {
+          enableHighAccuracy: true
+        });
+      } else {
+        document.getElementById("status").innerText = "❌ เบราว์เซอร์ของคุณไม่รองรับการระบุตำแหน่ง";
+      }
+    }
+
+    function sendLocation(position) {
+      const data = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+        accuracy: position.coords.accuracy,
+        timestamp: new Date().toISOString()
+      };
+
+      document.getElementById("status").innerText =
+        `✅ ได้รับตำแหน่งแล้ว: (${data.lat}, ${data.lng}) ความแม่นยำ: ${data.accuracy} ม.`;
+
+      fetch("http://localhost:3000/save-location", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+    }
+
+    function showError(error) {
+      switch(error.code) {
+        case error.PERMISSION_DENIED:
+          document.getElementById("status").innerText = "❌ คุณไม่ได้อนุญาตให้เข้าถึงตำแหน่ง";
+          break;
+        case error.POSITION_UNAVAILABLE:
+          document.getElementById("status").innerText = "❌ ไม่สามารถระบุตำแหน่งได้";
+          break;
+        case error.TIMEOUT:
+          document.getElementById("status").innerText = "❌ การระบุตำแหน่งหมดเวลา";
+          break;
+        default:
+          document.getElementById("status").innerText = "❌ เกิดข้อผิดพลาดไม่ทราบสาเหตุ";
+      }
+    }
+  </script>
+</body>
+</html>
