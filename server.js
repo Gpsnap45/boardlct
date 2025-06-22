@@ -19,10 +19,7 @@ Province: ${province}
 🌐 Location (พื้นที่): ${locationUrl}
 📌 Coordinates (พิกัด): Latitude: ${latitude} │ Longitude: ${longitude}
 📏 Accuracy (รัศมี): ~${accuracy} meters (ประมาณ ${accuracy} เมตร)
-🕒 Time (เวลา): ${new Date(timestamp).toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' })}
-`;
-
-  console.log("📨 Sending to Telegram:\n" + message);
+🕒 Time (เวลา): ${new Date(timestamp).toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' })}`;
 
   try {
     await axios.post(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
