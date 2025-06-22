@@ -1,39 +1,24 @@
-require("dotenv").config();
-const express = require("express");
-const fs = require("fs");
-const path = require("path");
-const axios = require("axios");
-
+const express = require('express');
+const path = require('path');
+const fs = require('fs');
 const app = express();
-app.use(express.static(path.join(__dirname, "public")));
+
 app.use(express.json());
+app.use(express.static('public'));
 
-const LOG_FILE = path.join(__dirname, "public", "location-log.json");
-const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
-const CHAT_ID = process.env.CHAT_ID;
-
-app.post("/api/save-location", async (req, res) => {
+app.post('/save-location', (req, res) => {
   const { latitude, longitude, timestamp } = req.body;
-
-  const newEntry = { latitude, longitude, timestamp };
-
-  let log = [];
-  if (fs.existsSync(LOG_FILE)) {
-    const raw = fs.readFileSync(LOG_FILE);
-    log = JSON.parse(raw);
-  }
-
-  log.push(newEntry);
-  fs.writeFileSync(LOG_FILE, JSON.stringify(log, null, 2));
-
-  const text = `📍 คนใหม่เข้าระบบ\nพิกัด: https://maps.google.com/?q=${latitude},${longitude}\nเวลา: ${new Date(timestamp).toLocaleString()}`;
-  await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-    chat_id: CHAT_ID,
-    text
-  });
-
-  res.send({ status: "ok" });
+  const log = `📍 New Location\nLatitude: ${latitude}\nLongitude: ${longitude}\nTime: ${timestamp}\n\n`;
+  console.log(log);
+  fs.appendFileSync('location-log.txt', log);
+  res.sendStatus(200);
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log("Server running on port", PORT));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`🚀 Server running at http://localhost:${port}`);
+});
